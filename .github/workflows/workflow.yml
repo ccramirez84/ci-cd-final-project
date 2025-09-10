@@ -2,15 +2,14 @@ name: Flujo de trabajo de CI
 
 on:
   push:
-    branches: [ main ]          # push en la rama principal
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]          # pull_request hacia la rama principal
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     container: python:3.9-slim
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -18,8 +17,9 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install flake8 nose coverage pinocchio
+          pip install -r requirements.txt
+          pip install flake8 nose nose-spec-plugin
+          pip install coverage
 
       - name: Lint con flake8
         run: |
@@ -27,5 +27,4 @@ jobs:
           flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Ejecutar pruebas unitarias con nose
-        run: |
-          nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
+        run: nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
